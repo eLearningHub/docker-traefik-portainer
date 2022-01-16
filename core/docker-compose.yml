@@ -41,10 +41,18 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
+
+      # Frontend
       - "traefik.http.routers.portainer-secure.entrypoints=websecure"
       - "traefik.http.routers.portainer-secure.rule=Host(`portainer.${BASE_DOMAIN}`)"
       - "traefik.http.routers.portainer-secure.service=portainer"
       - "traefik.http.services.portainer.loadbalancer.server.port=9000"
+      
+      # Edge
+      - "traefik.http.routers.edge.entrypoints=websecure"
+      - "traefik.http.routers.edge.rule=Host(`edge.${BASE_DOMAIN}`)"
+      - "traefik.http.routers.edge.service=edge"
+      - "traefik.http.services.edge.loadbalancer.server.port=8000"
 
 networks:
   proxy:
