@@ -2,7 +2,7 @@ version: "3.4"
 
 services:
   traefik:
-    image: traefik:latest
+    image: traefik:v2.5
     container_name: traefik
     restart: unless-stopped
     security_opt:
@@ -12,19 +12,42 @@ services:
     ports:
       - 80:80
       - 443:443
+    command:
+      - "--log.level=INFO"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.websecure.http.tls=true"
+      - "--entrypoints.websecure.http.tls.certResolver=dns"
+      - "--certificatesresolvers.dns.acme.email=${ACME_EMAIL}"
+      - "--certificatesresolvers.dns.acme.storage=acme.json"
+      - "--certificatesresolvers.dns.acme.tlschallenge=true"
+      - "--certificatesresolvers.dns.acme.caServer=${ACMEcaServer}"
+      - "--providers.docker=true"
+      - "--providers.docker.endpoint=unix:///var/run/docker.sock"
+      - "--providers.docker.exposedByDefault=false"
+      - "--serverstransport.insecureskipverify=true"
+      - "--api.insecure=true"
+      - "--api.dashboard=true"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./traefik-data/traefik.yml:/traefik.yml:ro
       - ./traefik-data/acme.json:/acme.json
-      - ./traefik-data/configurations:/configurations
+#      - ./traefik-data/traefik.yml:/traefik.yml:ro
+#      - ./traefik-data/configurations:/configurations
     labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=proxy"
-      - "traefik.http.routers.traefik-secure.entrypoints=websecure"
-      - "traefik.http.routers.traefik-secure.rule=Host(`traefik.${BASE_DOMAIN}`)"
-      - "traefik.http.routers.traefik-secure.middlewares=user-auth@file"
-      - "traefik.http.routers.traefik-secure.service=api@internal"
+      - traefik.enable=true
+      - traefik.docker.network=proxy
+      - traefik.http.middlewares.secure-ips.ipwhitelist.sourcerange=${IP_WHITE_LIST}
+      - traefik.http.routers.traefik-http.entrypoints=web
+      - traefik.http.routers.traefik-http.rule=Host(`traefik.${BASE_DOMAIN}`)
+      - traefik.http.routers.traefik=api@internal
+      - traefik.http.routers.traefik.entrypoints=websecure
+      - traefik.http.routers.traefik.rule=Host(`traefik.${BASE_DOMAIN}`)
+      - traefik.http.routers.traefik.middlewares=secure-ips@docker
+      - traefik.http.routers.traefik.service=api@internal
+      - traefik.http.services.traefik-containers.loadbalancer.server.port=8080
 
   portainer:
     image: portainer/portainer-ce:latest
