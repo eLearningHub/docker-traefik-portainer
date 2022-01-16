@@ -42,7 +42,7 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
       - "traefik.http.routers.portainer-secure.entrypoints=websecure"
-      - "traefik.http.routers.portainer-secure.rule=Host(`portainer.{BASE_DOMAIN}`)"
+      - "traefik.http.routers.portainer-secure.rule=Host(`portainer.${BASE_DOMAIN}`)"
       - "traefik.http.routers.portainer-secure.service=portainer"
       - "traefik.http.services.portainer.loadbalancer.server.port=9000"
 
