@@ -28,7 +28,7 @@ providers:
 certificatesResolvers:
   letsencrypt:
     acme:
-      email: bsamadi@nubonetics.com
+      email: info@nubonetics.com
       storage: acme.json
       tlschallenge: true
       caServer: https://acme-staging-v02.api.letsencrypt.org/directory
