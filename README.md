@@ -11,6 +11,7 @@ Detailed explanation how to use this in my blog post:
 
 ```
 $ git clone https://github.com/rafrasenberg/docker-traefik-portainer ./src
-$ cd src/core
+$ make volumes
+$ cd core
 $ docker-compose up -d
 ```
