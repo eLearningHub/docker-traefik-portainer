@@ -13,5 +13,9 @@ Detailed explanation how to use this in my blog post:
 $ git clone https://github.com/rafrasenberg/docker-traefik-portainer ./src
 $ make volumes
 $ cd core
+$ cp sample.env .env
+```
+Edit the variables in `.env`
+```
 $ docker-compose up -d
 ```
